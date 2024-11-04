@@ -22,15 +22,19 @@ This is a basic To-Do List application built in Python to help users manage thei
 
 ## Installation
 Follow these steps to install and set up the project on your local machine:
-bash
+
+```bash
 # Clone the repository
 $ git clone https://github.com/AzyrRuthless/todo_list.git
 $ cd todo_list
+```
 
 ## Usage
 To use the application, run the following command:
-bash
+
+```bash
 $ python todo_list.py
+```
 
 ## Contributing
 Contributions are welcome! Please fork the repository and use a feature branch. Pull requests are gladly accepted.
