@@ -1,80 +1,80 @@
-import time # Just for a small effect if needed, not strictly necessary for core logic
+import sys
+from typing import List, Dict, Union, Optional
 
-# Store tasks as a list of dictionaries to include completion status
-# Each task will look like: {'description': 'Do laundry', 'completed': False}
-tasks = []
+# Type alias for task structure
+Task = Dict[str, Union[str, bool]]
 
-def add_task(description):
-    """Adds a new task dictionary to the list."""
-    # Basic validation: ensure description is not empty
-    if not description.strip():
-        print("Task description cannot be empty.")
-        return
-    task = {"description": description, "completed": False}
-    tasks.append(task)
-    print(f"✅ Task '{description}' added!")
+tasks: List[Task] = []
 
-def view_tasks():
-    """Displays the current list of tasks with their status."""
+def get_valid_index(prompt_text: str) -> Optional[int]:
+    """
+    Prompts user for an index, validates it against the task list,
+    and returns the 0-based index or None.
+    """
+    try:
+        raw_input = input(prompt_text)
+        if raw_input.lower() == 'q':
+            return None
+            
+        index = int(raw_input) - 1
+        if 0 <= index < len(tasks):
+            return index
+        else:
+            print("❌ Invalid task number.")
+            return None
+    except ValueError:
+        print("❌ Invalid input. Please enter a number.")
+        return None
+
+def add_task() -> None:
+    while True:
+        description = input("Enter the task description (or 'q' to cancel): ")
+        if description.lower() == 'q':
+            return
+            
+        if description.strip():
+            tasks.append({"description": description, "completed": False})
+            print(f"✅ Task '{description}' added!")
+            break
+        print("⚠️ Description cannot be empty.")
+
+def view_tasks() -> None:
     print("\n--- Your To-Do List ---")
     if not tasks:
         print("✨ Looks empty here! Time to add some tasks. ✨")
     else:
         for i, task in enumerate(tasks, 1):
-            # Determine the status marker based on the 'completed' key
             status_marker = "[X]" if task["completed"] else "[ ]"
             print(f"{i}. {status_marker} {task['description']}")
     print("-----------------------\n")
 
-def mark_task_complete():
-    """Marks a specific task as complete."""
-    view_tasks() # Show tasks first for user to see numbers
-    if not tasks: # No tasks to mark
+def mark_task_complete() -> None:
+    view_tasks()
+    if not tasks:
         return
 
-    try:
-        task_num_str = input("Enter the number of the task to mark as complete: ")
-        # Convert input to an integer and adjust for 0-based index
-        task_index = int(task_num_str) - 1
-
-        # Check if the provided index is valid
-        if 0 <= task_index < len(tasks):
-            if tasks[task_index]["completed"]:
-                 print(f"👍 Task '{tasks[task_index]['description']}' is already complete!")
-            else:
-                tasks[task_index]["completed"] = True
-                print(f"🎉 Task '{tasks[task_index]['description']}' marked as complete!")
+    index = get_valid_index("Enter number to mark complete (or 'q' to cancel): ")
+    if index is not None:
+        if tasks[index]["completed"]:
+            print(f"👍 Task '{tasks[index]['description']}' is already complete!")
         else:
-            print("Invalid task number. Please try again.")
-    except ValueError:
-        # Handle cases where input is not a number
-        print("Invalid input. Please enter a number.")
+            tasks[index]["completed"] = True
+            print(f"🎉 Task '{tasks[index]['description']}' marked as complete!")
 
-def remove_task():
-    """Removes a specific task from the list."""
-    view_tasks() # Show tasks first
-    if not tasks: # No tasks to remove
+def remove_task() -> None:
+    view_tasks()
+    if not tasks:
         return
 
-    try:
-        task_num_str = input("Enter the number of the task to remove: ")
-        task_index = int(task_num_str) - 1
+    index = get_valid_index("Enter number to remove (or 'q' to cancel): ")
+    if index is not None:
+        removed = tasks.pop(index)
+        print(f"🗑️ Task '{removed['description']}' removed.")
 
-        if 0 <= task_index < len(tasks):
-            # Use pop to remove the task and get its description for the message
-            removed_task = tasks.pop(task_index)
-            print(f"🗑️ Task '{removed_task['description']}' removed.")
-        else:
-            print("Invalid task number. Please try again.")
-    except ValueError:
-        print("Invalid input. Please enter a number.")
-
-def main():
-    """Main function to run the to-do list application."""
-    print("\n🚀 Welcome to your Enhanced To-Do List! 🚀")
+def main() -> None:
+    print("\n🚀 Welcome to your Refactored To-Do List! 🚀")
 
     while True:
-        # Display menu options
         print("\n--- Menu ---")
         print("1. Add Task")
         print("2. View Tasks")
@@ -82,12 +82,11 @@ def main():
         print("4. Remove Task")
         print("5. Quit")
         print("------------")
+        
         choice = input("Choose an option (1-5): ")
 
-        # Process user choice
         if choice == "1":
-            task_desc = input("Enter the task description: ")
-            add_task(task_desc)
+            add_task()
         elif choice == "2":
             view_tasks()
         elif choice == "3":
@@ -95,12 +94,10 @@ def main():
         elif choice == "4":
             remove_task()
         elif choice == "5":
-            print("\n👋 Goodbye! Keep crushing those tasks!")
-            break # Exit the main loop
+            print("\n👋 Goodbye!")
+            sys.exit()
         else:
-            print("Invalid choice. Please enter a number between 1 and 5.")
+            print("⚠️ Invalid choice.")
 
-# Standard Python entry point check
 if __name__ == "__main__":
     main()
-    
